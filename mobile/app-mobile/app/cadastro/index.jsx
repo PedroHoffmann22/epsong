@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Pressable, Image } from 'react-native';
-import { Link } from 'expo-router'
+import { Link, router } from 'expo-router';
 
 export default function FullStack() {
     const [nome, setNome] = useState('');
@@ -10,14 +10,51 @@ export default function FullStack() {
     const [senha, setSenha] = useState('');
     const [confirmarSenha, setConfirmarSenha] = useState('');
 
+    const enviarCadastro = async () => {
+        if(senha !== confirmarSenha) {
+            alert('as senhas não coincidem')
+            return
+        }
+        try {
+            const response = fetch('http://localhost:8000/registro', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    nome: nome,
+                    sobrenome: telefone,
+                    email: email,
+                    dataNascimento: dataNascimento,
+                    senha: senha
+                })
+            })
+            if (response.status === 406) {
+                alert('preencha todos os campos')
+                return
+            }
+
+            if (response.status === 400) {
+                alert('erro ao cadastrar')
+                return
+            }
+
+            if (response.status === 201) {
+                router.push('/')
+            }
+        } catch (erro) {
+            console.log(erro)
+        }
+    }
     return (
         <View style={styles.container}>
             <View style={styles.logoContainer}>
-            <Image 
-                    source={{ uri: 'https://icons.veryicon.com/png/o/miscellaneous/linear-icon-8/background-music-01.png' }} 
-                    style={styles.logoImage} 
+                <Image
+                    source={{ uri: 'https://icons.veryicon.com/png/o/miscellaneous/linear-icon-8/background-music-01.png' }}
+                    style={styles.logoImage}
                 />
-            <Text style={styles.logoText}>EP SONG</Text>
+                <Text style={styles.logoText}>EP SONG</Text>
             </View>
 
             <TextInput
@@ -72,12 +109,12 @@ export default function FullStack() {
             />
 
             <View style={styles.row}>
-                <Pressable style={styles.button}>
+                <Pressable style={styles.button} onPress={enviarCadastro}>
                     <Text style={styles.buttonText}>Criar</Text>
                 </Pressable>
-                <Link href="../">
+                <Pressable style={styles.button} onPress={() => router.push('/')}>
                     <Text style={styles.buttonText}>Cancelar</Text>
-                </Link>
+                </Pressable>
             </View>
         </View>
     );
@@ -88,9 +125,9 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#80c5cc', 
+        backgroundColor: '#80c5cc',
     },
-     logoContainer: {
+    logoContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 40,
@@ -115,7 +152,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     halfInput: {
-        width: '%', 
+        width: '45%',
     },
     row: {
         flexDirection: 'row',
@@ -124,7 +161,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     button: {
-        width: '45%', 
+        width: '45%',
         height: 50,
         backgroundColor: '#fff',
         borderRadius: 25,
@@ -134,5 +171,7 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 18,
         color: '#000',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });

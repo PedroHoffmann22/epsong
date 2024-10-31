@@ -1,10 +1,46 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Pressable, Image } from 'react-native';
-import { Link } from 'expo-router'
+import { Link, useRouter} from 'expo-router'
 
 export default function FullStack() {
     const [usuario, setUsuario] = useState('');
     const [senha, setSenha] = useState('');
+
+    const router = useRouter()
+
+    const conectar = async () => {
+        if (!usuario || !senha ) {
+            alert('Preencha todos os campos');
+            return;
+        }
+         try {
+            const response = await fetch('http://localhost:8000/login/', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: usuario,
+                    senha: senha
+                })
+            });
+    
+            console.log(response)
+            if (response.status === 404) {
+                alert('Email não encontrado');
+                return
+            }
+            if (response.status === 403){
+                alert('Senha incorreta');
+                return
+            }
+            router.push('/cadastro')
+    
+        } catch (error) {
+            console.error('Erro:', error);
+        } 
+    }
 
     return (
         <View style={styles.container}>
@@ -35,12 +71,12 @@ export default function FullStack() {
 
             <Text style={styles.recoverPassword}>Recuperar senha</Text>
 
-            <Pressable style={styles.button}>
+            <Pressable style={styles.button} onPress={conectar}>
                 <Text style={styles.buttonText}>Confirmar</Text>
             </Pressable>
-            <Link href="/cadastro">
+            <Pressable style={styles.button} onPress={() => {router.push('/cadastro')}}>
                 <Text style={styles.createAccountText}>Criar cadastro</Text>
-            </Link>
+            </Pressable>
         </View>
     );
 }
@@ -104,6 +140,6 @@ const styles = StyleSheet.create({
     },
     createAccountText: {
         fontSize: 16,
-        color: '#fff',
+        color: '#000'
     },
 });
