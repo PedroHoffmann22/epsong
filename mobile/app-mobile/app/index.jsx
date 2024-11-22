@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Pressable, Image } from 'react-native';
 import { Link, useRouter} from 'expo-router'
+
 
 export default function FullStack() {
     const [usuario, setUsuario] = useState('');
     const [senha, setSenha] = useState('');
+  
 
     const router = useRouter()
 
@@ -35,7 +37,8 @@ export default function FullStack() {
                 alert('Senha incorreta');
                 return
             }
-            router.push('/cadastro')
+            
+            router.push('/Home')
     
         } catch (error) {
             console.error('Erro:', error);

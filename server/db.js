@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize'
 
 const sequelize = new Sequelize(
-    'epsong',
+    'spotfake',
     'postgres',
     'postgres',
     {
@@ -36,6 +36,10 @@ const User = sequelize.define('user', {
         type: Sequelize.DataTypes.ENUM('ativo', 'inativo'),
         allowNull: false,
         defaultValue: 'inativo'
+    },
+    profile_image:{
+        type: Sequelize.DataTypes.STRING,
+        allowNull: true
     }
 })
 

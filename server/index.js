@@ -9,6 +9,9 @@ app.use(Express.json())
 app.use(cors())
 
 // criarTabelas()
+
+app.use('usuarios', )
+
 app.post('/registro', async function(req,res) {
     try{
         const{nome, sobrenome, email, senha, dataNascimento} = req.body
