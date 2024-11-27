@@ -6,6 +6,6 @@ const rotas = express.Router()
 
 rotas.post('/registro', registro)
 rotas.post('/login', login)
-rotas.put('/change-password/:id', change_password)
+rotas.put('/nova_senha/:email', change_password)
 
 export { rotas }

@@ -1,21 +1,22 @@
 import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Pressable, Image } from 'react-native';
-import { Link, useRouter} from 'expo-router'
+import { Link, useRouter } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function FullStack() {
     const [usuario, setUsuario] = useState('');
     const [senha, setSenha] = useState('');
-  
+
 
     const router = useRouter()
 
     const conectar = async () => {
-        if (!usuario || !senha ) {
+        if (!usuario || !senha) {
             alert('Preencha todos os campos');
             return;
         }
-         try {
+        try {
             const response = await fetch('http://localhost:8000/autenticacao/login/', {
                 method: 'POST',
                 headers: {
@@ -27,30 +28,41 @@ export default function FullStack() {
                     senha: senha
                 })
             });
-    
+
             console.log(response)
             if (response.status === 404) {
                 alert('Email não encontrado');
                 return
             }
-            if (response.status === 403){
+            if (response.status === 403) {
                 alert('Senha incorreta');
                 return
             }
-            
-            router.push('/Home')
-    
+            if (response.status === 200) {
+                storeData(usuario)
+                router.push('/Home')
+            }
+
+
         } catch (error) {
             console.error('Erro:', error);
-        } 
+        }
     }
+
+    const storeData = async (value) => {
+        try {
+            await AsyncStorage.setItem('email', value);
+        } catch (e) {
+            console.log(e)
+        }
+    };
 
     return (
         <View style={styles.container}>
             <View style={styles.logoContainer}>
-                <Image 
-                    source={{ uri: 'https://icons.veryicon.com/png/o/miscellaneous/linear-icon-8/background-music-01.png' }} 
-                    style={styles.logoImage} 
+                <Image
+                    source={{ uri: 'https://icons.veryicon.com/png/o/miscellaneous/linear-icon-8/background-music-01.png' }}
+                    style={styles.logoImage}
                 />
                 <Text style={styles.logoText}>EP SONG</Text>
             </View>
@@ -62,7 +74,7 @@ export default function FullStack() {
                 onChangeText={setUsuario}
                 placeholderTextColor="#c4c4c4"
             />
-            
+
             <TextInput
                 style={styles.input}
                 placeholder="Senha"
@@ -77,7 +89,7 @@ export default function FullStack() {
             <Pressable style={styles.button} onPress={conectar}>
                 <Text style={styles.buttonText}>Confirmar</Text>
             </Pressable>
-            <Pressable style={styles.button} onPress={() => {router.push('/cadastro')}}>
+            <Pressable style={styles.button} onPress={() => { router.push('/cadastro') }}>
                 <Text style={styles.createAccountText}>Criar cadastro</Text>
             </Pressable>
         </View>

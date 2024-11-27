@@ -52,21 +52,26 @@ const login = async (req, res) => {
 }
 
 const change_password = async(req, res) => {
-    const user_id = req.params.id
-    const nova_senha = req.body.novaSenha
-    if (!nova_senha) {
-        res.status(400).send('Todos os campos devem ser preenchidos')
+    try {
+      const {email} = req.params
+    const {senha} = req.body
+    if (!senha) {
+        res.status(400).send('senha deve ser preenchido')
         return
     }
-    const user = await User.findOne({where:{id: user_id}})
-    if(!user){
-        res.status(404).send('User Not Found')
-        return
+    const usuario = await User.findOne({ where: { email: email } })
+    
+            if (!usuario) {
+                res.status(404).send('usuario não encontrado')
+                return
+            }
+            const senhaCriptografada = bcryptjs.hashSync(senha, 10)
+    await usuario.update({ senha: senhaCriptografada });
+            res.status(200).send('senha alterada com sucesso')  
+    } catch (error) {
+        res.status(500)
     }
-    const senhaCriptografada = bcryptjs.hashSync(nova_senha, 10)
-    user.senha = senhaCriptografada
-    await user.save()
-    res.status(200).send(user)
+    
 }
 
 export { registro, login, change_password }
